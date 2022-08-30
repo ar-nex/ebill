@@ -103,56 +103,6 @@ class BillController extends Controller
         return response()->json(['data' => $ancestorsWithCommission]);
     }
     
-    // bill payment requests
-    public function store1(Request $request)
-    {
-        // auth user
-        $user = Auth::user();
-        // check balance from transactionrepository
-        $transactionRepository = new \App\Repositories\TransactionRepository();
-        $balance = $transactionRepository->getBalance($user->id);
-        // low balance cancel
-        if ($balance < $request->amount) {
-            return response()->json(['error' => 'Low balance'], 401);
-        }
-        $this->validate($request, [
-            'amount' => 'required|numeric',
-            'consumer_mobile' => 'required|numeric',
-            'consumer_id' => 'required|string',
-            'operator_id' => 'required|numeric',
-            'operator' => 'required|string',
-        ]);
-
-        // transaction
-        DB::transaction(function() use ($request, $user){
-            $billRequest = new \App\Models\BillRequest;
-            $billRequest->amount = $request->amount;
-            $billRequest->consumer_mobile = $request->consumer_mobile;
-            $billRequest->consumer_id = $request->consumer_id;
-            $billRequest->operator = $request->operator;
-            $billRequest->operator_id = $request->operator_id;
-            $billRequest->user_id = $user->id;
-            $billRequest->save();
-
-            // get last transaction
-            $lastTransaction = \App\Models\Transaction::orderBy('id', 'desc')->first();
-            $transactionService = new \App\Services\TransactionService();
-
-            // last transaction
-            $lastTransaction = \App\Models\Transaction::orderBy('id', 'desc')->first();
-            // transaction
-            $transaction = new \App\Models\Transaction;
-            $transaction->user_id = $user->id;
-            $transaction->usertype = $user->usertype;
-            $transaction->code = "ELECT";
-            $transaction->transaction_id = $transactionService->getTransactionId($lastTransaction->transaction_id);
-            $transaction->type = 'out';
-            $transaction->out_amount = $request->amount;
-            $transaction->log = 'Bill payment request : id - ' . $billRequest->id;
-            $transaction->save();
-        });
-        return response()->json(['status' => true, 'message' => 'Bill request created successfully'], 200);
-    }
     // bill requests list status wise
     public function list(Request $request)
     {
