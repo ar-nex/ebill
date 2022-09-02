@@ -41,6 +41,13 @@ class TransactionRepository
         return $total_in - $total_out;
     }
 
+    public function getBalanceByUserTypeForUser($type, $parent_id)
+    {
+        $total_in = Transaction::where('type', 'in')->where('usertype', $type)->sum('in_amount');
+        $total_out = Transaction::where('type', 'out')->where('usertype', $type)->sum('out_amount');
+        return $total_in - $total_out;
+    }
+
     public function giveCommission($taker_id, $giver_id, $amount)
     {
         

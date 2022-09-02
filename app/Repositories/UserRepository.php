@@ -2,6 +2,7 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use App\Models\UserMap;
 
 class UserRepository
 {
@@ -23,6 +24,11 @@ class UserRepository
     public function getCountByUserType($type)
     {
         return User::where('usertype', $type)->count();
+    }
+
+    public function getCountByUserTypeForUser($type, $parentId)
+    {
+        return UserMap::where('usertype', $type)->where('parent_id', $parentId)->count();
     }
 
 }

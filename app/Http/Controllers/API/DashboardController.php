@@ -19,8 +19,6 @@ class DashboardController extends Controller
         $user = Auth::user();
         switch ($user->usertype) {
             case 'admin':
-
-                
                 $retailer_count = $userRepository->getCountByUserType('retailer');
                 $distributor_count = $userRepository->getCountByUserType('distributor');
                 $super_count = $userRepository->getCountByUserType('super');
@@ -43,14 +41,35 @@ class DashboardController extends Controller
                     'partner_balance' => $partner_balance, 
                     'self_balance' => $self_balance]);
                 break;
+            case 'sub-admin':
+                $retailer_count = $userRepository->getCountByUserTypeForUser('retailer', $user->id);
+                $distributor_count = $userRepository->getCountByUserTypeForUser('distributor', $user->id);
+                $super_count = $userRepository->getCountByUserTypeForUser('super', $user->id);
+                
+                // $retailer_balance = $transactionRepository->getBalanceByUserTypeForUser('retailer', $user->id);
+                // $distributor_balance = $transactionRepository->getBalanceByUserTypeForUser('distributor', $user->id);
+                // $super_balance = $transactionRepository->getBalanceByUserTypeForUser('super', $user->id);
+                
+                $self_balance = $transactionRepository->getBalance($user->id);
+                return response()->json([
+                    'retailer_count' => $retailer_count, 
+                    'distributor_count' => $distributor_count, 
+                    'super_count' => $super_count,
+                    'self_balance' => $self_balance]);
+                break;
+
             case 'super':
-                # code...
+                $retailer_count = $userRepository->getCountByUserTypeForUser('retailer', $user->id);
+                $distributor_count = $userRepository->getCountByUserTypeForUser('distributor', $user->id);
+
+                $self_balance = $transactionRepository->getBalance($user->id);
                 break;
             case 'distributor':
-                # code...
+                $retailer_count = $userRepository->getCountByUserTypeForUser('retailer', $user->id);
+                $self_balance = $transactionRepository->getBalance($user->id);
                 break;
             case 'retailer':
-                # code...
+                $self_balance = $transactionRepository->getBalance($user->id);
                 break;
             default:
                 # code...
