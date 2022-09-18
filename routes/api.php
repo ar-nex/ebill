@@ -53,6 +53,14 @@ Route::middleware('auth:sanctum')->delete('/bill/{id}', [App\Http\Controllers\AP
 Route::middleware('auth:sanctum')->post('/user', [App\Http\Controllers\API\UserController::class, 'store'])
         ->name('user.store');
 
+// store/update default rate
+Route::middleware('auth:sanctum')->post('/default/rate', [App\Http\Controllers\API\DefaultController::class, 'rate'])
+        ->name('default.rate_update');
+
+        // store/update default rate
+Route::middleware('auth:sanctum')->post('/default/commission', [App\Http\Controllers\API\DefaultController::class, 'commission'])
+->name('default.commission_update');
+
 // Route::middleware('auth:sanctum')->get('/tt', [App\Http\Controllers\API\BillController::class, 'tt'])
 //         ->name('bill.tt');
 
